@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Match</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Start Screen with Game Mode Selection -->
+    <div class="start-screen">
+        <img src="game title.png" alt="Brain Match Title" class="game-title-image">
+        <div class="mode-selection">
+            <button id="start-campaign-button" class="mode-button">Start Campaign</button>
+            <button id="start-reflex-button" class="mode-button">Reflex Mode</button>
+        </div>
+    </div>
+
+    <!-- Main Game Container -->
+    <div class="game-container hidden">
+        <header>
+            <h1>BRAIN MATCH</h1>
+            <div class="score-panel">
+                <span id="level-display">LEVEL 1</span>
+                <span id="turns-container">MOVES: <span id="turns">0</span></span>
+                <span id="timer-container" class="hidden">TIME: <span id="timer">00</span></span>
+            </div>
+        </header>
+        <main class="card-grid"></main>
+    </div>
+
+    <!-- Win/End Screen -->
+    <div class="win-screen hidden">
+        <h2 id="win-title">LEVEL COMPLETE!</h2>
+        <div id="win-stars-container" class="win-stars">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <div class="win-stats">
+            <div><span id="win-stats-label">TURNS</span>: <span id="win-stats-value">0</span></div>
+            <div id="win-xp-container">XP: <span id="win-xp">0</span></div>
+        </div>
+        <button id="next-action-button" class="mode-button">Next Level</button>
+    </div>
+
+    <!-- Sound Effects -->
+    <audio id="correct-sound" src="correct.mp3"></audio>
+    <audio id="incorrect-sound" src="incorrect.mp3"></audio>
+    <audio id="flip-sound" src="flip.mp3"></audio>
+    <audio id="reflex-sound" src="reflex-chime.mp3"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>

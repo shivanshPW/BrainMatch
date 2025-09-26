@@ -1,3 +1,7 @@
+// --- DEV FEATURE FLAG ---
+// Set to true to enable developer features (e.g., press 'C' to complete a level)
+const DEV_MODE = true;
+
 // --- DOM Elements ---
 const startScreen = document.querySelector('.start-screen');
 const gameContainer = document.querySelector('.game-container');
@@ -22,7 +26,41 @@ const winStarsContainer = document.getElementById('win-stars-container');
 const sounds = { correct: document.getElementById('correct-sound'), incorrect: document.getElementById('incorrect-sound'), flip: document.getElementById('flip-sound'), reflex: document.getElementById('reflex-sound') };
 
 // --- Game Content ---
-const gameContent = { science: { level1: { pairs: [ { symbol: 'Fe', name: 'Iron' }, { symbol: 'C', name: 'Carbon' }, { symbol: 'Cu', name: 'Copper' }, { symbol: 'O', name: 'Oxygen' }, { symbol: 'H', name: 'Hydrogen' }, { symbol: 'N', name: 'Nitrogen' }, { symbol: 'Au', name: 'Gold' }, { symbol: 'Ag', name: 'Silver' }] }, level2: { pairs: [ { symbol: 'He', name: 'Helium' }, { symbol: 'Li', name: 'Lithium' }, { symbol: 'B', name: 'Boron' }, { symbol: 'S', name: 'Sulphur' }, { symbol: 'Ne', name: 'Neon' }, { symbol: 'Na', name: 'Sodium' }, { symbol: 'Si', name: 'Silicon' }, { symbol: 'P', name: 'Phosphorus' }], timer: 60 }, level3: { pairs: [ { symbol: 'Ca', name: 'Calcium' }, { symbol: 'Co', name: 'Cobalt' }, { symbol: 'Mn', name: 'Manganese' }, { symbol: 'Mg', name: 'Magnesium' }, { symbol: 'K', name: 'Potassium' }, { symbol: 'Pb', name: 'Lead' }, { symbol: 'Sn', name: 'Tin' }, { symbol: 'Zn', name: 'Zinc' }], timer: 45 } } };
+const gameContent = { science: { level1: { pairs: [ 
+            { symbol: 'Fe', name: 'Iron' }, 
+            { symbol: 'C', name: 'Carbon' }, 
+            { symbol: 'Cu', name: 'Copper' }, 
+            { symbol: 'O', name: 'Oxygen' }, 
+            { symbol: 'H', name: 'Hydrogen' }, 
+            { symbol: 'N', name: 'Nitrogen' }, 
+            { symbol: 'Au', name: 'Gold' }, 
+            { symbol: 'Ag', name: 'Silver' }
+        ] 
+    }, 
+    
+    level2: { pairs: [ 
+            { symbol: 'He', name: 'Helium' }, 
+            { symbol: 'Li', name: 'Lithium' }, 
+            { symbol: 'B', name: 'Boron' }, 
+            { symbol: 'S', name: 'Sulphur' }, 
+            { symbol: 'Ne', name: 'Neon' }, 
+            { symbol: 'Na', name: 'Sodium' }, 
+            { symbol: 'Si', name: 'Silicon' }, 
+            { symbol: 'P', name: 'Phosphorus' }
+        ], 
+    timer: 60 }, 
+        
+        level3: { pairs: [ 
+            { symbol: 'Ca', name: 'Calcium' }, 
+            { symbol: 'Co', name: 'Cobalt' }, 
+            { symbol: 'Mn', name: 'Manganese' }, 
+            { symbol: 'Mg', name: 'Magnesium' }, 
+            { symbol: 'K', name: 'Potassium' }, 
+            { symbol: 'Pb', name: 'Lead' }, 
+            { symbol: 'Sn', name: 'Tin' }, 
+            { symbol: 'Zn', name: 'Zinc' }
+        ], 
+    timer: 45 } } };
 
 // --- Game State ---
 let gameState = {};
@@ -133,17 +171,42 @@ function handleReflexTimeout() {
 }
 
 // --- Game Flow & Screen Management ---
+function peekAtStart(duration, callback) {
+    gameState.lockBoard = true;
+    const cards = document.querySelectorAll('.card');
+    const flipOpenDelay = 100; 
+    const flipAnimationTime = 600; 
+
+    setTimeout(() => {
+        cards.forEach(card => card.classList.add('flipped'));
+    }, flipOpenDelay);
+
+    setTimeout(() => {
+        cards.forEach(card => card.classList.remove('flipped'));
+    }, duration + flipOpenDelay);
+    
+    setTimeout(() => {
+        gameState.lockBoard = false;
+        if (callback) {
+            callback();
+        }
+    }, duration + flipOpenDelay + flipAnimationTime);
+}
+
+
 function startGame(level) {
     resetGameState();
     gameState.gameMode = 'campaign';
     gameState.currentCampaignLevel = level;
     const levelData = gameContent.science[`level${level}`];
-    // UI Setup
     startScreen.classList.add('hidden'); winScreen.classList.add('hidden'); gameContainer.classList.remove('hidden');
     levelDisplay.textContent = `LEVEL ${level}`; turnsDisplay.textContent = '0';
     timerContainer.classList.toggle('hidden', !levelData.timer); turnsContainer.querySelector('span').textContent = "TURNS: ";
     createBoard(levelData.pairs);
-    if (levelData.timer) startTimer(levelData.timer);
+    
+    peekAtStart(2000, () => {
+        if (levelData.timer) startTimer(levelData.timer);
+    });
 }
 
 function startReflexMode() {
@@ -151,13 +214,16 @@ function startReflexMode() {
     gameState.gameMode = 'reflex';
     const allPairs = [ ...gameContent.science.level1.pairs, ...gameContent.science.level2.pairs, ...gameContent.science.level3.pairs ];
     const reflexPairs = shuffle(allPairs).slice(0, 8);
-    // UI Setup
     startScreen.classList.add('hidden'); winScreen.classList.add('hidden'); gameContainer.classList.remove('hidden');
     levelDisplay.textContent = 'REFLEX MODE'; turnsDisplay.textContent = '0';
     timerContainer.classList.add('hidden'); turnsContainer.querySelector('span').textContent = "MOVES: ";
     createBoard(reflexPairs);
-    setTimeout(triggerNextReflexChallenge, 1000);
+    
+    peekAtStart(2000, () => {
+        setTimeout(triggerNextReflexChallenge, 1000);
+    });
 }
+
 
 function handleCampaignWin() {
     clearAllTimers();
@@ -207,3 +273,17 @@ function clearAllTimers() { clearTimeout(gameState.reflexTimeoutId); clearInterv
 // --- Initial Event Listeners ---
 startCampaignButton.addEventListener('click', () => startGame(1));
 startReflexButton.addEventListener('click', startReflexMode);
+
+
+// --- [NEW] DEV FEATURE: AUTO-COMPLETE LEVEL ---
+window.addEventListener('keydown', (e) => {
+    // Check if DEV_MODE is on, the 'c' key was pressed, and the main game screen is active
+    if (DEV_MODE && e.key.toLowerCase() === 'c' && !gameContainer.classList.contains('hidden')) {
+        
+        // Ensure it only works for the campaign mode
+        if (gameState.gameMode === 'campaign') {
+            console.log("DEV: Auto-completing campaign level...");
+            handleCampaignWin();
+        }
+    }
+});

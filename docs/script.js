@@ -200,6 +200,7 @@ function handleCorrectMatch() {
     }
 }
 
+// Find this function in your script.js
 function handleIncorrectMatch() {
     const [first, second] = gameState.flippedCards;
     // Only play sound if the audio element exists
@@ -207,13 +208,38 @@ function handleIncorrectMatch() {
         sounds.incorrect.play().catch(e => {});
     }
     if (navigator.vibrate) navigator.vibrate(200);
-    setTimeout(() => { first.classList.add('shake'); second.classList.add('shake'); }, 200);
+
+    // --- MODIFY THE NEXT TWO SECTIONS ---
+
+    // 1. ADD the 'incorrect' class along with 'shake'
     setTimeout(() => {
-        first.classList.remove('flipped', 'shake'); second.classList.remove('flipped', 'shake');
+        first.classList.add('shake', 'incorrect');
+        second.classList.add('shake', 'incorrect');
+    }, 200);
+
+    // 2. REMOVE the 'incorrect' class when the cards flip back
+    setTimeout(() => {
+        first.classList.remove('flipped', 'shake', 'incorrect');
+        second.classList.remove('flipped', 'shake', 'incorrect');
         resetTurnState();
         if (gameState.gameMode === 'reflex') { setTimeout(triggerNextReflexChallenge, 500); }
     }, 1200);
 }
+
+// function handleIncorrectMatch() {
+//     const [first, second] = gameState.flippedCards;
+//     // Only play sound if the audio element exists
+//     if (sounds.incorrect) {
+//         sounds.incorrect.play().catch(e => {});
+//     }
+//     if (navigator.vibrate) navigator.vibrate(200);
+//     setTimeout(() => { first.classList.add('shake'); second.classList.add('shake'); }, 200);
+//     setTimeout(() => {
+//         first.classList.remove('flipped', 'shake'); second.classList.remove('flipped', 'shake');
+//         resetTurnState();
+//         if (gameState.gameMode === 'reflex') { setTimeout(triggerNextReflexChallenge, 500); }
+//     }, 1200);
+// }
 
 function resetTurnState() {
     if (gameState.reflexCard) gameState.reflexCard.classList.remove('reflex-active');

@@ -179,6 +179,7 @@ h1 {
     background-image: url('card4.png'); 
 }
 .card.correct .front-face { background-image: url('card(correct).png'); }
+.card.incorrect .front-face { background-image: url('card(incorrect).png'); }
 .card.shake { animation: shake 0.4s; }
 @keyframes shake { 10%, 90% { transform: translateX(-4px) rotateY(180deg); } 30%, 70% { transform: translateX(4px) rotateY(180deg); } 50% { transform: translateX(-4px) rotateY(180deg); } }
 .card.reflex-active .front-face { animation: glow 1.5s infinite alternate; }

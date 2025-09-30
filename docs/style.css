@@ -46,11 +46,25 @@ body {
 }
 
 .subtitle-image {
-    width: 100%;
+    width: 37.5%;
     max-width: 300px;
-    padding: 0 40px;
-    margin-top: -55px;
+    padding: 0 5px;
+    margin-top: -6.875%;
     margin-bottom: 0;
+}
+
+/* Media queries for better mobile responsiveness */
+@media (max-width: 768px) {
+    .subtitle-image {
+        margin-top: -8%;
+    }
+}
+
+@media (max-width: 480px) {
+    .subtitle-image {
+        margin-top: -10%;
+        padding: 0 3%;
+    }
 }
 
 .mode-selection {

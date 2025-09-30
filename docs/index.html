@@ -10,10 +10,34 @@
 <body>
     <!-- Start Screen with Game Mode Selection -->
     <div class="start-screen">
-        <img src="game title.png" alt="Brain Match Title" class="game-title-image">
+        <div class="title-group">
+            <img src="game title.png" alt="Brain Match Title" class="game-title-image">
+            <img src="subtitle.png" alt="Game Type" class="subtitle-image">
+        </div>
         <div class="mode-selection">
             <button id="start-campaign-button" class="mode-button">Start Campaign</button>
             <button id="start-reflex-button" class="mode-button">Reflex Mode</button>
+        </div>
+    </div>
+
+    <!-- How to Play Popup -->
+    <div class="how-to-play hidden">
+        <div class="how-to-play-content">
+            <h2>How to Play</h2>
+            <div class="tutorial-grid">
+                <div class="tutorial-row">
+                    <div class="tutorial-card" id="tutorial-card-1">
+                        <div class="tutorial-front"></div>
+                        <div class="tutorial-back"></div>
+                    </div>
+                    <div class="tutorial-card" id="tutorial-card-2">
+                        <div class="tutorial-front"></div>
+                        <div class="tutorial-back"></div>
+                    </div>
+                </div>
+            </div>
+            <p>Find and match the pairs!</p>
+            <button id="start-game-button" class="mode-button">Got it!</button>
         </div>
     </div>
 
@@ -48,6 +72,9 @@
     <audio id="incorrect-sound" src="incorrect.mp3"></audio>
     <audio id="flip-sound" src="flip.mp3"></audio>
     <audio id="reflex-sound" src="reflex-chime.mp3"></audio>
+    <audio id="background-music" src="background-music.mp3" loop></audio>
+    <audio id="level-complete-sound" src="level-complete.mp3"></audio>
+    <audio id="campaign-complete-sound" src="campaign-complete.mp3"></audio>
 
     <!-- Link to your JavaScript file -->
     <script src="script.js"></script>

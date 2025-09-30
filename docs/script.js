@@ -23,44 +23,49 @@ const winXpDisplay = document.getElementById('win-xp');
 const winStarsContainer = document.getElementById('win-stars-container');
 
 // --- Sound Elements ---
-const sounds = { correct: document.getElementById('correct-sound'), incorrect: document.getElementById('incorrect-sound'), flip: document.getElementById('flip-sound'), reflex: document.getElementById('reflex-sound') };
+const sounds = { 
+    correct: document.getElementById('correct-sound'), 
+    incorrect: document.getElementById('incorrect-sound'), 
+    flip: document.getElementById('flip-sound'), 
+    reflex: document.getElementById('reflex-sound'),
+    backgroundMusic: document.getElementById('background-music'),
+    levelComplete: document.getElementById('level-complete-sound'),
+    campaignComplete: document.getElementById('campaign-complete-sound')
+};
+
+// Function to handle background music
+function startBackgroundMusic() {
+    if (sounds.backgroundMusic) {
+        sounds.backgroundMusic.volume = 0.3; // Set volume to 30%
+        sounds.backgroundMusic.play().catch(e => {});
+    }
+}
+
+function stopBackgroundMusic() {
+    if (sounds.backgroundMusic) {
+        sounds.backgroundMusic.pause();
+        sounds.backgroundMusic.currentTime = 0;
+    }
+}
 
 // --- Game Content ---
-const gameContent = { science: { level1: { pairs: [ 
-            { symbol: 'Fe', name: 'Iron' }, 
-            { symbol: 'C', name: 'Carbon' }, 
-            { symbol: 'Cu', name: 'Copper' }, 
-            { symbol: 'O', name: 'Oxygen' }, 
-            { symbol: 'H', name: 'Hydrogen' }, 
-            { symbol: 'N', name: 'Nitrogen' }, 
-            { symbol: 'Au', name: 'Gold' }, 
-            { symbol: 'Ag', name: 'Silver' }
-        ] 
-    }, 
-    
-    level2: { pairs: [ 
-            { symbol: 'He', name: 'Helium' }, 
-            { symbol: 'Li', name: 'Lithium' }, 
-            { symbol: 'B', name: 'Boron' }, 
-            { symbol: 'S', name: 'Sulphur' }, 
-            { symbol: 'Ne', name: 'Neon' }, 
-            { symbol: 'Na', name: 'Sodium' }, 
-            { symbol: 'Si', name: 'Silicon' }, 
-            { symbol: 'P', name: 'Phosphorus' }
-        ], 
-    timer: 60 }, 
-        
-        level3: { pairs: [ 
-            { symbol: 'Ca', name: 'Calcium' }, 
-            { symbol: 'Co', name: 'Cobalt' }, 
-            { symbol: 'Mn', name: 'Manganese' }, 
-            { symbol: 'Mg', name: 'Magnesium' }, 
-            { symbol: 'K', name: 'Potassium' }, 
-            { symbol: 'Pb', name: 'Lead' }, 
-            { symbol: 'Sn', name: 'Tin' }, 
-            { symbol: 'Zn', name: 'Zinc' }
-        ], 
-    timer: 45 } } };
+let gameContent = null;
+
+// Load game content from JSON file
+async function loadGameContent() {
+    try {
+        const response = await fetch('gameContent.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        gameContent = await response.json();
+        // Enable start button once content is loaded
+        startCampaignButton.disabled = false;
+    } catch (error) {
+        console.error('Error loading game content:', error);
+        alert('Error loading game content. Please refresh the page.');
+    }
+}
 
 // --- Game State ---
 let gameState = {};
@@ -71,18 +76,83 @@ function resetGameState() {
 }
 
 // --- Scoring and Feedback ---
-function calculateXP(level, turns) { switch (level) { case 1: if (turns === 8) return 40; if (turns <= 12) return 35; return 30; case 2: if (turns <= 10) return 60; if (turns <= 14) return 50; return 40; case 3: if (turns <= 12) return 100; if (turns <= 16) return 80; return 60; default: return 0; } }
+function calculateXP(level, turns) {
+     switch (level) { 
+        case 1: 
+            if (turns === 8) return 40; 
+            if (turns <= 12) return 40;
+            if (turns <= 16) return 35; 
+            return 30; 
+        case 2: 
+            if (turns <= 10) return 60; 
+            if (turns <= 14) return 50;
+            return 40; 
+        case 3: 
+            if (turns <= 12) return 100; 
+            if (turns <= 16) return 80; 
+            return 60; 
+        default: return 0; 
+    } 
+}
 function calculateCampaignStars(level, turns) { const xp = calculateXP(level, turns); if (level === 1) { if (xp === 40) return 3; if (xp === 35) return 2; return 1; } if (level === 2) { if (xp === 60) return 3; if (xp === 50) return 2; return 1; } if (level === 3) { if (xp === 100) return 3; if (xp === 80) return 2; return 1; } return 0; }
 function calculateReflexStars(moves) { if (moves === 8) return 3; if (moves <= 12) return 2; return 1; }
 
 // --- Core Game Logic ---
 function shuffle(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
 
+// --- Board Creation with Multiple Content Types Support ---
 function createBoard(pairs) {
     cardGrid.innerHTML = '';
     const cardArray = [];
-    pairs.forEach(pair => { cardArray.push({ value: pair.symbol, match: pair.name }); cardArray.push({ value: pair.name, match: pair.symbol }); });
-    shuffle(cardArray).forEach(item => { const card = document.createElement('div'); card.classList.add('card'); card.dataset.value = item.value; card.dataset.match = item.match; card.innerHTML = `<div class="front-face">${item.value}</div><div class="back-face"></div>`; card.addEventListener('click', flipCard); cardGrid.appendChild(card); });
+    
+    pairs.forEach(pair => {
+        if (pair.a !== undefined) {
+            // Text to Text mode
+            if (pair.b !== undefined) {
+                cardArray.push({ value: pair.a, match: pair.b, type: 'text' });
+                cardArray.push({ value: pair.b, match: pair.a, type: 'text' });
+            }
+            // Text to Image mode
+            else if (pair.image !== undefined) {
+                cardArray.push({ value: pair.a, match: pair.image, type: 'text' });
+                cardArray.push({ value: pair.image, match: pair.a, type: 'image', alt: pair.imageAlt });
+            }
+        }
+        // Image to Image mode
+        else if (pair.firstImage !== undefined) {
+            cardArray.push({ 
+                value: pair.firstImage, 
+                match: pair.secondImage, 
+                type: 'image',
+                alt: pair.firstImageAlt 
+            });
+            cardArray.push({ 
+                value: pair.secondImage, 
+                match: pair.firstImage, 
+                type: 'image',
+                alt: pair.secondImageAlt 
+            });
+        }
+    });
+
+    shuffle(cardArray).forEach(item => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.dataset.value = item.value;
+        card.dataset.match = item.match;
+        
+        const frontFaceContent = item.type === 'image' 
+            ? `<img src="${item.value}" alt="${item.alt || ''}" />` 
+            : item.value;
+            
+        card.innerHTML = `
+            <div class="front-face">${frontFaceContent}</div>
+            <div class="back-face"></div>
+        `;
+        
+        card.addEventListener('click', flipCard);
+        cardGrid.appendChild(card);
+    });
 }
 
 function flipCard() {
@@ -91,7 +161,9 @@ function flipCard() {
 }
 
 function handleNormalFlip(card) {
-    sounds.flip.play().catch(e => {});
+    if (sounds.flip) {
+        sounds.flip.play().catch(e => {});
+    }
     card.classList.add('flipped');
     gameState.flippedCards.push(card);
     if (gameState.flippedCards.length === 2) { gameState.lockBoard = true; updateTurns(); checkForMatch(); }
@@ -106,7 +178,9 @@ function handleCorrectMatch() {
     const [first, second] = gameState.flippedCards;
     first.removeEventListener('click', flipCard); second.removeEventListener('click', flipCard);
     first.classList.add('correct'); second.classList.add('correct');
-    sounds.correct.play().catch(e => {});
+    if (sounds.correct) {
+        sounds.correct.play().catch(e => {});
+    }
     gameState.matchedPairs++;
     resetTurnState();
     if (gameState.matchedPairs === gameState.totalPairs) {
@@ -119,7 +193,10 @@ function handleCorrectMatch() {
 
 function handleIncorrectMatch() {
     const [first, second] = gameState.flippedCards;
-    sounds.incorrect.play().catch(e => {});
+    // Only play sound if the audio element exists
+    if (sounds.incorrect) {
+        sounds.incorrect.play().catch(e => {});
+    }
     if (navigator.vibrate) navigator.vibrate(200);
     setTimeout(() => { first.classList.add('shake'); second.classList.add('shake'); }, 200);
     setTimeout(() => {
@@ -195,10 +272,15 @@ function peekAtStart(duration, callback) {
 
 
 function startGame(level) {
+    if (!gameContent) {
+        alert('Game content not loaded. Please refresh the page.');
+        return;
+    }
     resetGameState();
+    startBackgroundMusic();
     gameState.gameMode = 'campaign';
     gameState.currentCampaignLevel = level;
-    const levelData = gameContent.science[`level${level}`];
+    const levelData = gameContent.content.science[`level${level}`];
     startScreen.classList.add('hidden'); winScreen.classList.add('hidden'); gameContainer.classList.remove('hidden');
     levelDisplay.textContent = `LEVEL ${level}`; turnsDisplay.textContent = '0';
     timerContainer.classList.toggle('hidden', !levelData.timer); turnsContainer.querySelector('span').textContent = "TURNS: ";
@@ -212,7 +294,11 @@ function startGame(level) {
 function startReflexMode() {
     resetGameState();
     gameState.gameMode = 'reflex';
-    const allPairs = [ ...gameContent.science.level1.pairs, ...gameContent.science.level2.pairs, ...gameContent.science.level3.pairs ];
+    const allPairs = [ 
+        ...gameContent.content.science.level1.pairs, 
+        ...gameContent.content.science.level2.pairs, 
+        ...gameContent.content.science.level3.pairs 
+    ];
     const reflexPairs = shuffle(allPairs).slice(0, 8);
     startScreen.classList.add('hidden'); winScreen.classList.add('hidden'); gameContainer.classList.remove('hidden');
     levelDisplay.textContent = 'REFLEX MODE'; turnsDisplay.textContent = '0';
@@ -238,6 +324,18 @@ function handleCampaignWin() {
         winXpDisplay.textContent = xp;
         const starElements = winStarsContainer.querySelectorAll('.star');
         starElements.forEach((star, index) => star.classList.toggle('filled', index < stars));
+        
+        // Play appropriate completion sound
+        if (level === 3) {
+            if (sounds.campaignComplete) {
+                sounds.campaignComplete.play().catch(e => {});
+            }
+        } else {
+            if (sounds.levelComplete) {
+                sounds.levelComplete.play().catch(e => {});
+            }
+        }
+        
         if (level < 3) { nextActionButton.textContent = 'Next Level'; nextActionButton.onclick = () => startGame(level + 1); } 
         else { nextActionButton.textContent = 'Main Menu'; nextActionButton.onclick = showStartScreen; }
     }, 800);
@@ -267,11 +365,88 @@ function startTimer(duration) {
     }, 1000);
 }
 
-function showStartScreen() { winScreen.classList.add('hidden'); gameContainer.classList.add('hidden'); startScreen.classList.remove('hidden'); }
-function clearAllTimers() { clearTimeout(gameState.reflexTimeoutId); clearInterval(gameState.timerId); }
+function showStartScreen() { 
+    winScreen.classList.add('hidden'); 
+    gameContainer.classList.add('hidden'); 
+    startScreen.classList.remove('hidden');
+    stopBackgroundMusic();
+}
+
+function clearAllTimers() { 
+    clearTimeout(gameState.reflexTimeoutId); 
+    clearInterval(gameState.timerId); 
+}
+
+// --- How to Play Tutorial ---
+function showHowToPlay() {
+    const howToPlay = document.querySelector('.how-to-play');
+    const startGameButton = document.getElementById('start-game-button');
+    const tutorialCards = document.querySelectorAll('.tutorial-card');
+    
+    // Get first pair from level 1 for the tutorial
+    const tutorialPair = gameContent.content.science.level1.pairs[0];
+    const card1Front = document.querySelector('#tutorial-card-1 .tutorial-front');
+    const card2Front = document.querySelector('#tutorial-card-2 .tutorial-front');
+
+    // Set up the cards based on the game mode
+    if (gameContent.gameMode === 'textToText') {
+        card1Front.textContent = tutorialPair.a;
+        card2Front.textContent = tutorialPair.b;
+    } else if (gameContent.gameMode === 'textToImage') {
+        card1Front.textContent = tutorialPair.a;
+        card2Front.innerHTML = `<img src="${tutorialPair.image}" alt="${tutorialPair.imageAlt}">`;
+    } else if (gameContent.gameMode === 'imageToImage') {
+        card1Front.innerHTML = `<img src="${tutorialPair.firstImage}" alt="${tutorialPair.firstImageAlt}">`;
+        card2Front.innerHTML = `<img src="${tutorialPair.secondImage}" alt="${tutorialPair.secondImageAlt}">`;
+    }
+
+    howToPlay.classList.remove('hidden');
+
+    // Demonstrate card flipping
+    let flipIndex = 0;
+    function flipNextCard() {
+        if (flipIndex < tutorialCards.length) {
+            tutorialCards[flipIndex].classList.add('flipped');
+            
+            // Add correct class after second card is flipped
+            if (flipIndex === 1) {
+                setTimeout(() => {
+                    tutorialCards.forEach(card => {
+                        card.classList.add('correct');
+                    });
+                }, 600);
+            }
+            
+            flipIndex++;
+            setTimeout(flipNextCard, 1500);
+        } else {
+            setTimeout(() => {
+                tutorialCards.forEach(card => {
+                    card.classList.remove('flipped', 'correct');
+                });
+                flipIndex = 0;
+                setTimeout(flipNextCard, 2000);
+            }, 1000);
+        }
+    }
+
+    flipNextCard();
+
+    // Start game when "Got it!" is clicked
+    startGameButton.onclick = () => {
+        howToPlay.classList.add('hidden');
+        startGame(1);
+    };
+}
 
 // --- Initial Event Listeners ---
-startCampaignButton.addEventListener('click', () => startGame(1));
+// Disable start button until content is loaded
+startCampaignButton.disabled = true;
+
+// Load game content when page loads
+document.addEventListener('DOMContentLoaded', loadGameContent);
+
+startCampaignButton.addEventListener('click', showHowToPlay);
 startReflexButton.addEventListener('click', startReflexMode);
 
 

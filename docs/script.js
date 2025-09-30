@@ -314,11 +314,13 @@ function startReflexMode() {
 function handleCampaignWin() {
     clearAllTimers();
     const level = gameState.currentCampaignLevel;
+    console.log(`handleCampaignWin called for level: ${level}`);
     const xp = calculateXP(level, gameState.turns);
     const stars = calculateCampaignStars(level, gameState.turns);
     setTimeout(() => {
         gameContainer.classList.add('hidden'); winScreen.classList.remove('hidden');
         winStarsContainer.classList.remove('hidden'); winXpContainer.classList.remove('hidden');
+        console.log(`Playing sound for level: ${level}`);
         winTitle.textContent = level < 3 ? `LEVEL ${level} COMPLETE!` : "CAMPAIGN COMPLETE!";
         winStatsLabel.textContent = "TURNS"; winStatsValue.textContent = gameState.turns;
         winXpDisplay.textContent = xp;

@@ -67,6 +67,34 @@
         <button id="next-action-button" class="mode-button">Next Level</button>
     </div>
 
+    <div class="final-score-screen hidden">
+        <h2 id="final-title">CAMPAIGN COMPLETE!</h2>
+        <div id="final-stars-container" class="win-stars">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <div class="win-stats">
+            <div><span>TOTAL TURNS</span>: <span id="final-turns-value">0</span></div>
+            <div><span>TOTAL XP</span>: <span id="final-xp-value">0</span></div>
+        </div>
+        <button id="main-menu-button" class="mode-button">Main Menu</button>
+    </div>
+    
+    <div class="last-score-display hidden">
+        <h3>Last Campaign</h3>
+        <div class="last-score-stats">
+            <div class="last-score-item">
+                <span class="last-score-label">TURNS</span>
+                <span class="last-score-value" id="last-score-turns">0</span>
+            </div>
+            <div class="last-score-item">
+                <span class="last-score-label">XP</span>
+                <span class="last-score-value" id="last-score-xp">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- <audio id="level-complete-sound" src="level-complete.mp3"></audio> -->
+
     <!-- Sound Effects -->
     <audio id="correct-sound" src="correct.mp3"></audio>
     <audio id="incorrect-sound" src="incorrect.mp3"></audio>

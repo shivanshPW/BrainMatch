@@ -22,6 +22,13 @@ const winXpContainer = document.getElementById('win-xp-container');
 const winXpDisplay = document.getElementById('win-xp');
 const winStarsContainer = document.getElementById('win-stars-container');
 
+const finalScoreScreen = document.querySelector('.final-score-screen');
+const finalTurnsDisplay = document.getElementById('final-turns-value');
+const finalXpDisplay = document.getElementById('final-xp-value');
+// const mainMenuButton = document.getElementById('main-menu-button');
+const finalStarsContainer = document.getElementById('final-stars-container');
+const mainMenuButton = document.getElementById('main-menu-button');
+
 // --- Sound Elements ---
 const sounds = { 
     correct: document.getElementById('correct-sound'), 
@@ -69,6 +76,8 @@ async function loadGameContent() {
 
 // --- Game State ---
 let gameState = {};
+let totalCampaignTurns = 0;
+let totalCampaignXP = 0;
 
 function resetGameState() {
     clearAllTimers();
@@ -276,6 +285,10 @@ function startGame(level) {
         alert('Game content not loaded. Please refresh the page.');
         return;
     }
+    if (level === 1) {
+        totalCampaignTurns = 0;
+        totalCampaignXP = 0;
+    }
     resetGameState();
     startBackgroundMusic();
     gameState.gameMode = 'campaign';
@@ -316,6 +329,8 @@ function handleCampaignWin() {
     const level = gameState.currentCampaignLevel;
     const xp = calculateXP(level, gameState.turns);
     const stars = calculateCampaignStars(level, gameState.turns);
+    totalCampaignTurns += gameState.turns;
+    totalCampaignXP += xp;
     setTimeout(() => {
         gameContainer.classList.add('hidden'); winScreen.classList.remove('hidden');
         winStarsContainer.classList.remove('hidden'); winXpContainer.classList.remove('hidden');
@@ -337,8 +352,37 @@ function handleCampaignWin() {
         }
         
         if (level < 3) { nextActionButton.textContent = 'Next Level'; nextActionButton.onclick = () => startGame(level + 1); } 
-        else { nextActionButton.textContent = 'Main Menu'; nextActionButton.onclick = showStartScreen; }
+        else { 
+            nextActionButton.textContent = 'See Final Score'; // Change button text
+            nextActionButton.onclick = showFinalScoreScreen; // Change button action
+        }
     }, 800);
+}
+
+function calculateFinalStars(totalXP) {
+    if (totalXP >= 150) {
+        return 3; // 3 stars for scores 150 and above
+    } else if (totalXP >= 70) {
+        return 2; // 2 stars for scores between 70 and 149
+    } else {
+        return 1; // 1 star for scores below 70
+    }
+}
+
+function showFinalScoreScreen() {
+    winScreen.classList.add('hidden'); // Hide the level 3 win screen
+    
+    const stars = calculateFinalStars(totalCampaignXP);
+    const starElements = finalStarsContainer.querySelectorAll('.star');
+    starElements.forEach((star, index) => {
+        star.classList.toggle('filled', index < stars);
+    });
+
+    // Update the values on the final screen
+    finalTurnsDisplay.textContent = totalCampaignTurns;
+    finalXpDisplay.textContent = totalCampaignXP;
+    
+    finalScoreScreen.classList.remove('hidden'); // Show the final score screen
 }
 
 function handleReflexModeEnd() {
@@ -368,7 +412,9 @@ function startTimer(duration) {
 function showStartScreen() { 
     winScreen.classList.add('hidden'); 
     gameContainer.classList.add('hidden'); 
+    finalScoreScreen.classList.add('hidden');
     startScreen.classList.remove('hidden');
+    
     stopBackgroundMusic();
 }
 
@@ -449,6 +495,7 @@ document.addEventListener('DOMContentLoaded', loadGameContent);
 startCampaignButton.addEventListener('click', showHowToPlay);
 startReflexButton.addEventListener('click', startReflexMode);
 
+mainMenuButton.addEventListener('click', showStartScreen);
 
 // --- [NEW] DEV FEATURE: AUTO-COMPLETE LEVEL ---
 window.addEventListener('keydown', (e) => {

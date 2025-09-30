@@ -29,6 +29,8 @@ const finalXpDisplay = document.getElementById('final-xp-value');
 const finalStarsContainer = document.getElementById('final-stars-container');
 const mainMenuButton = document.getElementById('main-menu-button');
 
+const turnsLabel = document.getElementById('turns-label');
+
 // --- Sound Elements ---
 const sounds = { 
     correct: document.getElementById('correct-sound'), 
@@ -320,9 +322,12 @@ function startGame(level) {
     gameState.gameMode = 'campaign';
     gameState.currentCampaignLevel = level;
     const levelData = gameContent.content.science[`level${level}`];
-    startScreen.classList.add('hidden'); winScreen.classList.add('hidden'); gameContainer.classList.remove('hidden');
-    levelDisplay.textContent = `LEVEL ${level}`; turnsDisplay.textContent = '0';
-    timerContainer.classList.toggle('hidden', !levelData.timer); turnsContainer.querySelector('span').textContent = "TURNS: ";
+    startScreen.classList.add('hidden'); 
+    winScreen.classList.add('hidden'); gameContainer.classList.remove('hidden');
+    levelDisplay.textContent = `LEVEL ${level}`; 
+    turnsDisplay.textContent = '0';
+    timerContainer.classList.toggle('hidden', !levelData.timer); 
+    turnsLabel.textContent = "TURNS";
     createBoard(levelData.pairs);
     
     peekAtStart(2000, () => {
@@ -341,7 +346,8 @@ function startReflexMode() {
     const reflexPairs = shuffle(allPairs).slice(0, 8);
     startScreen.classList.add('hidden'); winScreen.classList.add('hidden'); gameContainer.classList.remove('hidden');
     levelDisplay.textContent = 'REFLEX MODE'; turnsDisplay.textContent = '0';
-    timerContainer.classList.add('hidden'); turnsContainer.querySelector('span').textContent = "MOVES: ";
+    timerContainer.classList.add('hidden'); 
+    turnsLabel.textContent = "MOVES";
     createBoard(reflexPairs);
     
     peekAtStart(2000, () => {

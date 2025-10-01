@@ -399,3 +399,40 @@ h1 {
     gap: 10px;
     margin-top: 20px;
 }
+
+/* Pause Tutorial Popup */
+.pause-tutorial {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+
+.pause-tutorial-content {
+    background-color: #f7f3e9;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.pause-tutorial h2 {
+    font-family: 'Mochiy Pop One', sans-serif;
+    color: #4b4b4b;
+    margin-bottom: 20px;
+}
+
+.pause-tutorial p {
+    margin: 20px 0;
+    color: #4b4b4b;
+    font-family: 'Mochiy Pop One', sans-serif;
+    font-size: 1.1em;
+}

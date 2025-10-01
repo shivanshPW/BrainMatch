@@ -6,10 +6,14 @@ const DEV_MODE = true;
 const startScreen = document.querySelector(".start-screen");
 const gameContainer = document.querySelector(".game-container");
 const winScreen = document.querySelector(".win-screen");
-const pauseMenu = document.querySelector(".pause-menu");
-const pauseButton = document.getElementById("pause-button");
-const resumeButton = document.getElementById("resume-button");
-const exitButton = document.getElementById("exit-button");
+
+const pauseMenu = document.querySelector('.pause-menu');
+const pauseTutorial = document.querySelector('.pause-tutorial');
+const pauseButton = document.getElementById('pause-button');
+const tutorialButton = document.getElementById('tutorial-button');
+const resumeButton = document.getElementById('resume-button');
+const exitButton = document.getElementById('exit-button');
+const closeTutorialButton = document.getElementById('close-tutorial-button');
 const startCampaignButton = document.getElementById("start-campaign-button");
 
 const startReflexButton = document.getElementById("start-reflex-button");
@@ -626,69 +630,132 @@ function showHowToPlay() {
 }
 
 // --- Pause Menu Functions ---
+// function showPauseMenu() {
+//   gameState.isPaused = true;
+//   gameState.lockBoard = true;
+//   pauseMenu.classList.remove("hidden");
+
+//   // Set up tutorial cards in pause menu
+//   const tutorialPair = gameContent.content.science.level1.pairs[0];
+//   const card1Front = document.querySelector(
+//     "#pause-tutorial-card-1 .tutorial-front"
+//   );
+//   const card2Front = document.querySelector(
+//     "#pause-tutorial-card-2 .tutorial-front"
+//   );
+
+//   if (gameContent.gameMode === "textToText") {
+//     card1Front.textContent = tutorialPair.a;
+//     card2Front.textContent = tutorialPair.b;
+//   } else if (gameContent.gameMode === "textToImage") {
+//     card1Front.textContent = tutorialPair.a;
+//     card2Front.innerHTML = `<img src="${tutorialPair.image}" alt="${tutorialPair.imageAlt}">`;
+//   } else if (gameContent.gameMode === "imageToImage") {
+//     card1Front.innerHTML = `<img src="${tutorialPair.firstImage}" alt="${tutorialPair.firstImageAlt}">`;
+//     card2Front.innerHTML = `<img src="${tutorialPair.secondImage}" alt="${tutorialPair.secondImageAlt}">`;
+//   }
+
+//   // Start tutorial animation
+//   const tutorialCards = document.querySelectorAll(".pause-tutorial-card");
+//   let flipIndex = 0;
+
+//   function flipNextCard() {
+//     if (flipIndex < tutorialCards.length) {
+//       tutorialCards[flipIndex].classList.add("flipped");
+
+//       if (flipIndex === 1) {
+//         setTimeout(() => {
+//           tutorialCards.forEach((card) => {
+//             card.classList.add("correct");
+//           });
+//         }, 600);
+//       }
+
+//       flipIndex++;
+//       setTimeout(flipNextCard, 1500);
+//     } else {
+//       setTimeout(() => {
+//         tutorialCards.forEach((card) => {
+//           card.classList.remove("flipped", "correct");
+//         });
+//         flipIndex = 0;
+//         if (gameState.isPaused) {
+//           setTimeout(flipNextCard, 2000);
+//         }
+//       }, 1000);
+//     }
+//   }
+
+//   flipNextCard();
+// }
+
 function showPauseMenu() {
-  gameState.isPaused = true;
-  gameState.lockBoard = true;
-  pauseMenu.classList.remove("hidden");
-
-  // Set up tutorial cards in pause menu
-  const tutorialPair = gameContent.content.science.level1.pairs[0];
-  const card1Front = document.querySelector(
-    "#pause-tutorial-card-1 .tutorial-front"
-  );
-  const card2Front = document.querySelector(
-    "#pause-tutorial-card-2 .tutorial-front"
-  );
-
-  if (gameContent.gameMode === "textToText") {
-    card1Front.textContent = tutorialPair.a;
-    card2Front.textContent = tutorialPair.b;
-  } else if (gameContent.gameMode === "textToImage") {
-    card1Front.textContent = tutorialPair.a;
-    card2Front.innerHTML = `<img src="${tutorialPair.image}" alt="${tutorialPair.imageAlt}">`;
-  } else if (gameContent.gameMode === "imageToImage") {
-    card1Front.innerHTML = `<img src="${tutorialPair.firstImage}" alt="${tutorialPair.firstImageAlt}">`;
-    card2Front.innerHTML = `<img src="${tutorialPair.secondImage}" alt="${tutorialPair.secondImageAlt}">`;
-  }
-
-  // Start tutorial animation
-  const tutorialCards = document.querySelectorAll(".pause-tutorial-card");
-  let flipIndex = 0;
-
-  function flipNextCard() {
-    if (flipIndex < tutorialCards.length) {
-      tutorialCards[flipIndex].classList.add("flipped");
-
-      if (flipIndex === 1) {
-        setTimeout(() => {
-          tutorialCards.forEach((card) => {
-            card.classList.add("correct");
-          });
-        }, 600);
-      }
-
-      flipIndex++;
-      setTimeout(flipNextCard, 1500);
-    } else {
-      setTimeout(() => {
-        tutorialCards.forEach((card) => {
-          card.classList.remove("flipped", "correct");
-        });
-        flipIndex = 0;
-        if (gameState.isPaused) {
-          setTimeout(flipNextCard, 2000);
-        }
-      }, 1000);
-    }
-  }
-
-  flipNextCard();
+    gameState.isPaused = true;
+    gameState.lockBoard = true;
+    pauseMenu.classList.remove('hidden');
 }
 
 function hidePauseMenu() {
   gameState.isPaused = false;
   gameState.lockBoard = false;
   pauseMenu.classList.add("hidden");
+}
+
+function showPauseTutorial() {
+    pauseTutorial.classList.remove('hidden');
+    
+    // Set up tutorial cards
+    const tutorialPair = gameContent.content.science.level1.pairs[0];
+    const card1Front = document.querySelector('#pause-tutorial-card-1 .tutorial-front');
+    const card2Front = document.querySelector('#pause-tutorial-card-2 .tutorial-front');
+
+    if (gameContent.gameMode === 'textToText') {
+        card1Front.textContent = tutorialPair.a;
+        card2Front.textContent = tutorialPair.b;
+    } else if (gameContent.gameMode === 'textToImage') {
+        card1Front.textContent = tutorialPair.a;
+        card2Front.innerHTML = `<img src="${tutorialPair.image}" alt="${tutorialPair.imageAlt}">`;
+    } else if (gameContent.gameMode === 'imageToImage') {
+        card1Front.innerHTML = `<img src="${tutorialPair.firstImage}" alt="${tutorialPair.firstImageAlt}">`;
+        card2Front.innerHTML = `<img src="${tutorialPair.secondImage}" alt="${tutorialPair.secondImageAlt}">`;
+    }
+
+    // Start tutorial animation
+    const tutorialCards = document.querySelectorAll('.pause-tutorial-card');
+    let flipIndex = 0;
+    
+    function flipNextCard() {
+        if (flipIndex < tutorialCards.length) {
+            tutorialCards[flipIndex].classList.add('flipped');
+            
+            if (flipIndex === 1) {
+                setTimeout(() => {
+                    tutorialCards.forEach(card => {
+                        card.classList.add('correct');
+                    });
+                }, 600);
+            }
+            
+            flipIndex++;
+            setTimeout(flipNextCard, 1500);
+        } else {
+            setTimeout(() => {
+                tutorialCards.forEach(card => {
+                    card.classList.remove('flipped', 'correct');
+                });
+                flipIndex = 0;
+                if (!pauseTutorial.classList.contains('hidden')) {
+                    setTimeout(flipNextCard, 2000);
+                }
+            }, 1000);
+        }
+    }
+
+    flipNextCard();
+}
+
+function hidePauseTutorial() {
+    pauseTutorial.classList.add('hidden');
 }
 
 // --- Initial Event Listeners ---
@@ -719,9 +786,12 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-pauseButton.addEventListener("click", showPauseMenu);
-resumeButton.addEventListener("click", hidePauseMenu);
-exitButton.addEventListener("click", () => {
-  hidePauseMenu();
-  showStartScreen();
+// Pause button event listeners
+pauseButton.addEventListener('click', showPauseMenu);
+tutorialButton.addEventListener('click', showPauseTutorial);
+closeTutorialButton.addEventListener('click', hidePauseTutorial);
+resumeButton.addEventListener('click', hidePauseMenu);
+exitButton.addEventListener('click', () => {
+    hidePauseMenu();
+    showStartScreen();
 });

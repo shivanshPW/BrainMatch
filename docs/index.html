@@ -15,7 +15,7 @@
             <img src="subtitle.png" alt="Game Type" class="subtitle-image">
         </div>
         <div class="mode-selection">
-            <button id="start-campaign-button" class="mode-button">Start Campaign</button>
+            <button id="start-campaign-button" class="mode-button">Start Game</button>
             <button id="start-reflex-button" class="mode-button">Reflex Mode</button>
         </div>
     </div>
@@ -41,9 +41,36 @@
         </div>
     </div>
 
+    </div>
+
+    <!-- Pause Menu -->
+    <div class="pause-menu hidden">
+        <div class="pause-menu-content">
+            <h2>PAUSED</h2>
+            <div class="tutorial-grid">
+                <div class="tutorial-row">
+                    <div class="tutorial-card pause-tutorial-card" id="pause-tutorial-card-1">
+                        <div class="tutorial-front"></div>
+                        <div class="tutorial-back"></div>
+                    </div>
+                    <div class="tutorial-card pause-tutorial-card" id="pause-tutorial-card-2">
+                        <div class="tutorial-front"></div>
+                        <div class="tutorial-back"></div>
+                    </div>
+                </div>
+            </div>
+            <p>Find and match the pairs!</p>
+            <div class="pause-buttons">
+                <button id="resume-button" class="mode-button">Resume</button>
+                <button id="exit-button" class="mode-button">Exit to Menu</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Game Container -->
     <div class="game-container hidden">
         <header>
+            <button id="pause-button" class="pause-button">⏸</button>
             <h1>BRAIN MATCH</h1>
             <div class="score-panel">
                 <span id="level-display">LEVEL 1</span>
@@ -68,7 +95,7 @@
     </div>
 
     <div class="final-score-screen hidden">
-        <h2 id="final-title">CAMPAIGN COMPLETE!</h2>
+        <h2 id="final-title">GAME COMPLETE!</h2>
         <div id="final-stars-container" class="win-stars">
             <span class="star">★</span><span class="star">★</span><span class="star">★</span>
         </div>
@@ -80,7 +107,7 @@
     </div>
     
     <div class="last-score-display hidden">
-        <h3>Last Campaign</h3>
+        <h3>Last Game</h3>
         <div class="last-score-stats">
             <div class="last-score-item">
                 <span class="last-score-label">TURNS</span>

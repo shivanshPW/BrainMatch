@@ -1,6 +1,6 @@
 // --- DEV FEATURE FLAG ---
 // Set to true to enable developer features (e.g., press 'C' to complete a level)
-const DEV_MODE = true;
+const DEV_MODE = false;
 
 // --- DOM Elements ---
 const startScreen = document.querySelector(".start-screen");

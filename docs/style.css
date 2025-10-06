@@ -355,6 +355,55 @@ h1 {
     font-size: 1.1em;
 }
 
+/* Peek Timer Styles (Add this to your style.css) */
+.peek-timer {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 10px;
+    position: relative;
+    background-color: #e0d9c9;
+    border-radius: 8px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+/* Base styles for BOTH countdown numbers */
+.peek-timer .timer-countdown {
+    font-family: 'Mochiy Pop One', sans-serif;
+    font-size: 1.5em;
+    position: absolute;
+    width: 100%; /* Make text span the full width to stay centered */
+    text-align: center; /* Center the text */
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.peek-timer .timer-countdown-black {
+    color: #4b4b4b;
+    z-index: 2;
+}
+
+.peek-timer .timer-countdown-white {
+    color: white;
+    z-index: 4; /* Must be on top of the progress bar */
+}
+
+.peek-timer .timer-progress {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #926565;
+    border-radius: 8px;
+    transition: width 1s linear;
+    z-index: 3; /* Above black text, below white text */
+
+    /* --- THIS IS THE KEY TO THE SHRINK ANIMATION --- */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 /* Pause Menu */
 .pause-menu {
     position: fixed;

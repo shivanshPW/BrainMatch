@@ -40,6 +40,10 @@ const mainMenuButton = document.getElementById("main-menu-button");
 
 const turnsLabel = document.getElementById("turns-label");
 
+const peekTimer = document.querySelector(".peek-timer");
+const peekTimerTextElements = peekTimer.querySelectorAll(".timer-countdown");
+const peekTimerProgress = peekTimer.querySelector(".timer-progress");
+
 // --- Sound Elements ---
 const sounds = {
   correct: document.getElementById("correct-sound"),
@@ -374,25 +378,52 @@ function handleReflexTimeout() {
 
 // --- Game Flow & Screen Management ---
 function peekAtStart(duration, callback) {
-  gameState.lockBoard = true;
-  const cards = document.querySelectorAll(".card");
-  const flipOpenDelay = 100;
-  const flipAnimationTime = 600;
+    gameState.lockBoard = true;
+    const cards = document.querySelectorAll(".card");
+    const flipOpenDelay = 100;
+    const flipAnimationTime = 600;
 
-  setTimeout(() => {
-    cards.forEach((card) => card.classList.add("flipped"));
-  }, flipOpenDelay);
+    let totalTime = duration / 1000;
+    let timeLeft = totalTime;
 
-  setTimeout(() => {
-    cards.forEach((card) => card.classList.remove("flipped"));
-  }, duration + flipOpenDelay);
+    // Set initial state
+    peekTimer.classList.remove('hidden');
+    peekTimerProgress.style.transition = 'none'; // Disable transition for the initial set
+    peekTimerProgress.style.width = '100%';
 
-  setTimeout(() => {
-    gameState.lockBoard = false;
-    if (callback) {
-      callback();
-    }
-  }, duration + flipOpenDelay + flipAnimationTime);
+    // Update both text elements (white and black)
+    peekTimerTextElements.forEach(text => text.textContent = timeLeft);
+    
+    // Force browser to render the initial state before re-enabling transitions
+    peekTimerProgress.offsetHeight; 
+    peekTimerProgress.style.transition = 'width 1s linear'; // Re-enable for animation
+
+    const timerInterval = setInterval(() => {
+        timeLeft--;
+        peekTimerTextElements.forEach(text => text.textContent = timeLeft);
+        peekTimerProgress.style.width = `${(timeLeft / totalTime) * 100}%`;
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+        }
+    }, 1000);
+
+    // --- Card flipping timeouts remain the same ---
+    setTimeout(() => {
+        cards.forEach((card) => card.classList.add("flipped"));
+    }, flipOpenDelay);
+
+    setTimeout(() => {
+        cards.forEach((card) => card.classList.remove("flipped"));
+    }, duration + flipOpenDelay);
+
+    setTimeout(() => {
+        gameState.lockBoard = false;
+        peekTimer.classList.add('hidden');
+        if (callback) {
+            callback();
+        }
+    }, duration + flipOpenDelay + flipAnimationTime);
 }
 
 function startGame(level) {

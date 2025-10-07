@@ -380,28 +380,26 @@ function handleReflexTimeout() {
 function peekAtStart(duration, callback) {
     gameState.lockBoard = true;
     const cards = document.querySelectorAll(".card");
+    const blocks = document.querySelectorAll('.timer-block');
+    // The 'countdownText' variable has been removed
     const flipOpenDelay = 100;
     const flipAnimationTime = 600;
 
-    let totalTime = duration / 1000;
-    let timeLeft = totalTime;
+    let timeLeft = duration / 1000;
 
     // Set initial state
     peekTimer.classList.remove('hidden');
-    peekTimerProgress.style.transition = 'none'; // Disable transition for the initial set
-    peekTimerProgress.style.width = '100%';
-
-    // Update both text elements (white and black)
-    peekTimerTextElements.forEach(text => text.textContent = timeLeft);
-    
-    // Force browser to render the initial state before re-enabling transitions
-    peekTimerProgress.offsetHeight; 
-    peekTimerProgress.style.transition = 'width 1s linear'; // Re-enable for animation
+    // Line to update text content has been removed
 
     const timerInterval = setInterval(() => {
+        // Find the correct block to hide.
+        const blockToHide = blocks[timeLeft - 1];
+        if (blockToHide) {
+            blockToHide.classList.add('inactive');
+        }
+
         timeLeft--;
-        peekTimerTextElements.forEach(text => text.textContent = timeLeft);
-        peekTimerProgress.style.width = `${(timeLeft / totalTime) * 100}%`;
+        // Line to update text content has been removed
 
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
@@ -420,12 +418,22 @@ function peekAtStart(duration, callback) {
     setTimeout(() => {
         gameState.lockBoard = false;
         peekTimer.classList.add('hidden');
+        // Reset blocks for the next round
+        blocks.forEach(block => block.classList.remove('inactive'));
         if (callback) {
             callback();
         }
     }, duration + flipOpenDelay + flipAnimationTime);
 }
-
+function createPeekTimerBlocks(seconds) {
+    const container = document.querySelector('.timer-blocks-container');
+    container.innerHTML = ''; // Clear any blocks from the previous game
+    for (let i = 0; i < seconds; i++) {
+        const block = document.createElement('div');
+        block.classList.add('timer-block');
+        container.appendChild(block);
+    }
+}
 function startGame(level) {
   if (!gameContent) {
     alert("Game content not loaded. Please refresh the page.");
@@ -449,8 +457,12 @@ function startGame(level) {
   turnsLabel.textContent = "TURNS";
   createBoard(levelData.pairs);
 
-  peekAtStart(5000, () => {
-    if (levelData.timer) startTimer(levelData.timer);
+
+
+  const peekDurationSeconds = 5; // Define duration in seconds
+  createPeekTimerBlocks(peekDurationSeconds); // Create the blocks
+  peekAtStart(peekDurationSeconds * 1000, () => { // Pass duration in ms
+      if (levelData.timer) startTimer(levelData.timer);
   });
 }
 
@@ -472,8 +484,10 @@ function startReflexMode() {
   turnsLabel.textContent = "MOVES";
   createBoard(reflexPairs);
 
-  peekAtStart(2000, () => {
-    setTimeout(triggerNextReflexChallenge, 1000);
+  const peekDurationSeconds = 2; // Shorter duration for reflex mode
+  createPeekTimerBlocks(peekDurationSeconds); // Create the blocks
+  peekAtStart(peekDurationSeconds * 1000, () => { // Pass duration in ms
+      setTimeout(triggerNextReflexChallenge, 1000);
   });
 }
 

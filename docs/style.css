@@ -356,52 +356,50 @@ h1 {
 }
 
 /* Peek Timer Styles (Add this to your style.css) */
+/* In style.css, replace ALL previous peek-timer styles with this block */
+
 .peek-timer {
     width: 100%;
     height: 40px;
     margin-bottom: 10px;
     position: relative;
-    background-color: #e0d9c9;
-    border-radius: 8px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-    overflow: hidden;
+    /* Flexbox to center the contents (the number and the block container) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Base styles for BOTH countdown numbers */
-.peek-timer .timer-countdown {
+.timer-blocks-container {
+    /* This container holds the blocks in a row */
+    display: flex;
+    gap: 6px; /* The space between each block */
+    position: absolute;
+}
+
+.timer-block {
+    width: 40px;
+    height: 25px;
+    background-color: #926565; /* Active block color */
+    border-radius: 6px;
+    box-shadow: inset 0 -3px 4px rgba(0,0,0,0.15);
+    /* Smooth transition for the disappearing effect */
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.timer-block.inactive {
+    /* The state of a "disappeared" block */
+    transform: scale(0.8);
+    opacity: 0;
+}
+
+.peek-timer{
     font-family: 'Mochiy Pop One', sans-serif;
-    font-size: 1.5em;
-    position: absolute;
-    width: 100%; /* Make text span the full width to stay centered */
-    text-align: center; /* Center the text */
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-}
-
-.peek-timer .timer-countdown-black {
-    color: #4b4b4b;
-    z-index: 2;
-}
-
-.peek-timer .timer-countdown-white {
+    font-size: 1.8em;
     color: white;
-    z-index: 4; /* Must be on top of the progress bar */
-}
-
-.peek-timer .timer-progress {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    background-color: #926565;
-    border-radius: 8px;
-    transition: width 1s linear;
-    z-index: 3; /* Above black text, below white text */
-
-    /* --- THIS IS THE KEY TO THE SHRINK ANIMATION --- */
-    left: 50%;
-    transform: translateX(-50%);
+    /* Using text-shadow to ensure readability against any background */
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    z-index: 5; /* Ensure the number is always on top */
+    position: relative; /* Let it sit naturally in the flex container */
 }
 
 /* Pause Menu */

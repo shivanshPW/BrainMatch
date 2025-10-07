@@ -1,6 +1,6 @@
 // --- DEV FEATURE FLAG ---
 // Set to true to enable developer features (e.g., press 'C' to complete a level)
-const DEV_MODE = false;
+const DEV_MODE = true;
 
 // --- DOM Elements ---
 const startScreen = document.querySelector(".start-screen");
@@ -500,6 +500,15 @@ function handleCampaignWin() {
   totalCampaignTurns += gameState.turns;
   totalCampaignXP += xp;
   setTimeout(() => {
+    // --- ADDED: Trigger Confetti ---
+    if (typeof confetti === 'function') {
+        confetti({
+            particleCount: 150,
+            spread: 90,
+            origin: { y: 0.6 }
+        });
+    }
+    
     gameContainer.classList.add("hidden");
     winScreen.classList.remove("hidden");
     winStarsContainer.classList.remove("hidden");
@@ -566,6 +575,15 @@ function handleReflexModeEnd() {
   clearAllTimers();
   const stars = calculateReflexStars(gameState.turns);
   setTimeout(() => {
+    // --- ADDED: Trigger Confetti ---
+    if (typeof confetti === 'function') {
+        confetti({
+            particleCount: 150,
+            spread: 90,
+            origin: { y: 0.6 }
+        });
+    }
+
     gameContainer.classList.add("hidden");
     winScreen.classList.remove("hidden");
     winTitle.textContent = "REFLEX COMPLETE!";
